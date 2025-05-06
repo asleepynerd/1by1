@@ -24,6 +24,9 @@ model User {
 
   accounts      Account[]
   sessions      Session[]
+
+  posts         Post[]
+  likes         Like[]
 }
 
 model Account {
@@ -59,4 +62,28 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+
+  parent    Post?    @relation("ReplyParent", fields: [parentId], references: [id])
+  parentId  String?
+  replies   Post[]   @relation("ReplyParent")
+  likes     Like[]
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
 } 
