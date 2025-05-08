@@ -30,12 +30,12 @@ export function Sidebar({ onHide }: { onHide?: () => void }) {
         <div className="text-base font-bold text-white text-center max-w-[8rem] truncate">{session?.user?.name || 'No Name'}</div>
       </div>
       <nav className="flex flex-col gap-2 w-full px-2">
-        <Link href="/home" className="block w-full py-2 px-3 rounded-lg font-bold text-base text-white border-2 border-white hover:bg-white hover:text-black transition-all text-left">Home</Link>
-        <Link href="/feed" className="block w-full py-2 px-3 rounded-lg font-bold text-base text-white border-2 border-white hover:bg-white hover:text-black transition-all text-left">Feed</Link>
-        <Link href="/settings" className="block w-full py-2 px-3 rounded-lg font-bold text-base text-white border-2 border-white hover:bg-white hover:text-black transition-all text-left">Settings</Link>
+        <Link href="/home" className="block w-full py-2 px-3 rounded-lg font-bold text-base text-white hover:bg-gray-900 transition-all text-left">Home</Link>
+        <Link href="/feed" className="block w-full py-2 px-3 rounded-lg font-bold text-base text-white hover:bg-gray-900 transition-all text-left">Feed</Link>
+        <Link href="/settings" className="block w-full py-2 px-3 rounded-lg font-bold text-base text-white hover:bg-gray-900 transition-all text-left">Settings</Link>
         <button
           onClick={() => signOut({ callbackUrl: '/' })}
-          className="block w-full py-2 px-3 rounded-lg font-bold text-base text-white border-2 border-white hover:bg-red-600 hover:text-white transition-all text-left mt-4"
+          className="block w-full py-2 px-3 rounded-lg font-bold text-base text-white hover:bg-red-600 hover:text-white transition-all text-left mt-4"
         >
           Sign Out
         </button>

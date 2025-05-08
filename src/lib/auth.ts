@@ -28,27 +28,6 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
       try {
-        // fuck fuck fuck fuck fuck
-        const invitationCode = String(credentials?.invitation || "");
-        console.log('SIGNIN: invitationCode:', invitationCode);
-
-        const userCount = await prisma.user.count();
-        if (userCount === 0) {
-          return true;
-        }
-
-        const inviter = await prisma.user.findFirst({
-          where: {
-            invitationCode,
-            hasInvited: false,
-          },
-        });
-        console.log('SIGNIN: inviter:', inviter);
-
-        if (!inviter) {
-          return false;
-        }
-
         return true;
       } catch (error) {
         console.error('Sign in error:', error);
@@ -74,11 +53,11 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/auth/signin',
     error: '/auth/error',
+    verifyRequest: '/auth/verify-request',
   },
   events: {
     async createUser({ user }) {
       // ok i might've actually done this correctly
-      // Fetch invitationCode from user if needed
       const invitationCode = (user as any).invitationCode;
       if (invitationCode) {
         const inviter = await prisma.user.findFirst({
