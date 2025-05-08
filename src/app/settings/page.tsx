@@ -27,7 +27,7 @@ export default function SettingsPage() {
     setChanged(
       name !== (session.user.name || "") ||
       (file !== null) ||
-      (image === "" && session.user.image)
+      (!!session.user.image && image === "")
     );
   }, [name, file, image, session]);
 

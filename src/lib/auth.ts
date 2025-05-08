@@ -29,7 +29,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile, email, credentials }) {
       try {
         // fuck fuck fuck fuck fuck
-        const invitationCode = credentials?.invitation || email?.verificationRequest?.url?.split('invitation=')[1];
+        const invitationCode = String(credentials?.invitation || "");
         console.log('SIGNIN: invitationCode:', invitationCode);
 
         const userCount = await prisma.user.count();
@@ -59,7 +59,10 @@ export const authOptions: NextAuthOptions = {
       try {
         if (session.user) {
           session.user.id = user.id;
-          session.user.invitationCode = user.invitationCode;
+          if ('invitationCode' in user) {
+            // @ts-expect-error: custom property from Prisma user
+            session.user.invitationCode = user.invitationCode;
+          }
         }
         return session;
       } catch (error) {
@@ -73,9 +76,10 @@ export const authOptions: NextAuthOptions = {
     error: '/auth/error',
   },
   events: {
-    async createUser({ user, profile, account, isNewUser }) {
+    async createUser({ user }) {
       // ok i might've actually done this correctly
-      const invitationCode = account?.invitation || profile?.invitation || null;
+      // Fetch invitationCode from user if needed
+      const invitationCode = (user as any).invitationCode;
       if (invitationCode) {
         const inviter = await prisma.user.findFirst({
           where: { invitationCode },
