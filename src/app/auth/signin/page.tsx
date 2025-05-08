@@ -10,15 +10,18 @@ export default function SignIn() {
   const [invitation, setInvitation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isFirstUser, setIsFirstUser] = useState(false);
+  const [hasInvitation, setHasInvitation] = useState(true);
   const searchParams = useSearchParams();
 
   useEffect(() => {
     const code = searchParams.get('invitation');
     if (code) setInvitation(code);
-    // ok so basically i majorly fucked up
     fetch('/api/auth/first-user')
       .then(res => res.json())
-      .then(data => setIsFirstUser(data.isFirstUser))
+      .then(data => {
+        setIsFirstUser(data.isFirstUser);
+        setHasInvitation(!data.isFirstUser);
+      })
       .catch(console.error);
   }, [searchParams]);
 
@@ -29,7 +32,7 @@ export default function SignIn() {
       await signIn('email', {
         email,
         callbackUrl: '/',
-        invitation,
+        invitation: hasInvitation ? invitation : undefined,
       });
     } catch (error) {
       console.error('Sign in error:', error);
@@ -85,6 +88,20 @@ export default function SignIn() {
             </div>
           </div>
           {!isFirstUser && (
+            <div className="flex items-center mt-4 mb-2">
+              <input
+                id="has-invitation"
+                type="checkbox"
+                checked={hasInvitation}
+                onChange={e => setHasInvitation(e.target.checked)}
+                className="mr-2 accent-black"
+              />
+              <label htmlFor="has-invitation" className="text-sm font-mono text-gray-400 select-none">
+                Have an invitation code?
+              </label>
+            </div>
+          )}
+          {!isFirstUser && hasInvitation && (
             <div>
               <label htmlFor="invitation" className="block text-sm font-mono text-gray-400">
                 INVITATION CODE
@@ -95,7 +112,7 @@ export default function SignIn() {
                   id="invitation"
                   name="invitation"
                   type="text"
-                  required
+                  required={hasInvitation}
                   value={invitation}
                   onChange={e => setInvitation(e.target.value)}
                   className="relative w-full px-4 py-3 bg-black border-2 border-white rounded-lg text-white placeholder-gray-400 font-mono focus:outline-none"
@@ -129,7 +146,7 @@ export default function SignIn() {
           </motion.button>
         </motion.form>
 
-        {!invitation && !isFirstUser && (
+        {!isFirstUser && hasInvitation && !invitation && (
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
